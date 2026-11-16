@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản Lý Chi Tiêu Gia Đình</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- GIAO DIỆN: sửa ở css/style.css -->
+<link rel="stylesheet" href="css/style.css">
+</head><body>
+<div class="max-w-7xl mx-auto p-3 md:p-6">
+<div class="flex flex-col md:flex-row justify-between gap-3 mb-4">
+<div><h1 class="text-2xl md:text-3xl font-black">💰 Quản Lý Chi Tiêu Gia Đình</h1><p class="text-slate-500 text-sm">Thu nhập vợ chồng • Hũ tiền • Thống kê tháng</p></div>
+<div class="flex gap-2 items-center"><input type="month" id="monthPicker" value="2026-11" class="w-auto"><button class="btn" onclick="openModal()">+ Thêm giao dịch</button></div>
+</div>
+<div class="flex gap-2 overflow-x-auto pb-2 mb-3">
+<button class="tab-btn active" onclick="showTab('overview',this)">📊 Tổng quan</button>
+<button class="tab-btn" onclick="showTab('income',this)">💵 Thu nhập</button>
+<button class="tab-btn" onclick="showTab('trans',this)">🧾 Giao dịch</button>
+<button class="tab-btn" onclick="showTab('envelopes',this)">🏦 Hũ tiền</button>
+<button class="tab-btn" onclick="showTab('cats',this)">🏷️ Danh mục</button>
+<button class="tab-btn" onclick="showTab('stats',this)">📈 Thống kê tháng</button>
+<button class="tab-btn" onclick="showTab('settings',this)">⚙️ Cài đặt</button>
+</div>
+
+<div id="tab-overview">
+<div class="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-4">
+<div class="card !bg-blue-50"><p class="text-xs font-bold text-blue-600">THU NHẬP CỦA CHỒNG</p><p id="incHusband" class="text-xl font-black">0 ₫</p></div>
+<div class="card !bg-pink-50"><p class="text-xs font-bold text-pink-600">THU NHẬP CỦA VỢ</p><p id="incWife" class="text-xl font-black">0 ₫</p></div>
+<div class="card !bg-emerald-50"><p class="text-xs font-bold text-emerald-600">TỔNG THU</p><p id="totalIn" class="text-xl font-black">0 ₫</p></div>
+<div class="card !bg-red-50"><p class="text-xs font-bold text-red-600">TỔNG CHI</p><p id="totalOut" class="text-xl font-black">0 ₫</p></div>
+<div class="card !bg-amber-50 col-span-2 lg:col-span-1"><p class="text-xs font-bold text-amber-700">SỐ DƯ</p><p id="balance" class="text-xl font-black">0 ₫</p></div>
+</div>
+<div class="grid md:grid-cols-2 gap-4"><div class="card"><h3 class="font-bold">Thu vs Chi - 12 tháng</h3><canvas id="chartMonth" height="200"></canvas></div><div class="card"><h3 class="font-bold">Chi theo danh mục</h3><canvas id="chartCat" height="200"></canvas></div></div>
+</div>
+
+<!-- TAB SỬA THU NHẬP - MỚI THÊM CHO BẠN -->
+<div id="tab-income" class="hidden">
+<div class="card max-w-xl">
+<h3 class="font-bold text-lg mb-2">💵 Sửa thu nhập tháng này</h3>
+<p class="text-sm text-slate-500 mb-3">Bạn chỉ cần gõ số mới vào 2 ô dưới, bấm Lưu là Tổng thu tự đổi. Không cần xóa giao dịch cũ.</p>
+<div class="grid grid-cols-2 gap-3">
+<div><label class="text-xs font-bold">Thu nhập của Chồng (VND)</label><input id="editIncHusband" type="number" placeholder="16000000"></div>
+<div><label class="text-xs font-bold">Thu nhập của Vợ (VND)</label><input id="editIncWife" type="number" placeholder="13000000"></div>
+</div>
+<button class="btn mt-3 w-full" onclick="saveIncome()">💾 Lưu thu nhập tháng này</button>
+<p class="text-xs text-slate-400 mt-2">Ví dụ: Chồng 18.000.000 thì gõ 18000000</p>
+</div>
+</div>
+
+<div id="tab-trans" class="hidden"><div class="card"><p class="text-sm text-slate-500 mb-2">Bấm <b>Sửa</b> để sửa bất kỳ khoản thu/chi nào. Bấm <b>Xóa</b> để xóa.</p><div id="txList"></div></div></div>
+<div id="tab-envelopes" class="hidden"><div class="flex justify-between mb-3"><h3 class="font-bold text-lg">Hũ tiền</h3><button class="btn" onclick="addEnvelope()">+ Thêm hũ mới</button></div><div id="envelopeList" class="grid md:grid-cols-3 gap-3"></div></div>
+<div id="tab-cats" class="hidden"><div class="grid md:grid-cols-2 gap-4"><div class="card"><div class="flex justify-between"><h3 class="font-bold">Danh mục THU</h3><button class="btn" onclick="addCategory('Thu')">+ Thêm</button></div><div id="catIn" class="mt-3 space-y-2"></div></div><div class="card"><div class="flex justify-between"><h3 class="font-bold">Danh mục CHI</h3><button class="btn" onclick="addCategory('Chi')">+ Thêm</button></div><div id="catOut" class="mt-3 space-y-2"></div></div></div></div>
+<div id="tab-stats" class="hidden"><div class="card"><h3 class="font-bold mb-3">Bảng tổng kết từng tháng</h3><div id="monthTable" class="overflow-x-auto"></div></div></div>
+<div id="tab-settings" class="hidden"><div class="card max-w-xl space-y-3"><h3 class="font-bold">Đổi tên vợ chồng</h3><div class="grid grid-cols-2 gap-2"><input id="nameHusband"><input id="nameWife"></div><button class="btn" onclick="saveNames()">Lưu tên</button></div></div>
+</div>
+
+<div id="modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-3 z-50"><div class="bg-white rounded-2xl w-full max-w-lg p-5">
+<h3 class="font-black text-lg mb-3" id="modalTitle">Thêm giao dịch</h3>
+<div class="space-y-2">
+<div class="grid grid-cols-2 gap-2"><button id="btnThu" class="btn" onclick="setType('Thu')">⬆ THU</button><button id="btnChi" class="btn2" onclick="setType('Chi')">⬇ CHI</button></div>
+<div><label class="text-xs font-bold">Người</label><select id="fPerson"><option>Chồng</option><option>Vợ</option><option>Chung</option></select></div>
+<div><label class="text-xs font-bold">Danh mục</label><select id="fCat"></select></div>
+<div><label class="text-xs font-bold">Hũ tiền</label><select id="fEnvelope"></select></div>
+<div><label class="text-xs font-bold">Số tiền (VND)</label><input id="fAmount" type="number" placeholder="500000"></div>
+<div><label class="text-xs font-bold">Ngày</label><input id="fDate" type="date" value="2026-11-16"></div>
+<div><label class="text-xs font-bold">Ghi chú</label><input id="fNote" placeholder="Lương, Xăng xe..."></div>
+</div>
+<div class="flex gap-2 mt-4"><button class="btn flex-1" onclick="saveTx()">Lưu</button><button class="btn2 flex-1" onclick="closeModal()">Đóng</button></div>
+</div></div>
+
+<!-- CHỨC NĂNG: sửa ở js/app.js | DỮ LIỆU: sửa ở js/data.js -->
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body></html>
