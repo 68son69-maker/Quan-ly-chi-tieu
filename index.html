@@ -1,311 +1,136 @@
 <!DOCTYPE html>
-<html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>FinHome — Dashboard & Hũ Tiền Tháng Sau</title>
+<html lang="vi">
+<head>
+<!-- CẤU TRÚC 3 FILE - SỬA ĐÚNG CHỖ, KHÔNG LỘN -->
+<!-- index.html : chỉ có khung giao diện, không có số tiền -->
+<!-- css/style.css : chỉ sửa màu, font, đẹp xấu -->
+<!-- js/data.js : chỉ sửa số tiền, hũ tiền, danh mục -->
+<!-- js/app.js : chỉ sửa nút bấm, tính toán, thêm chức năng -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản Lý Chi Tiêu Gia Đình - Bản Hoàn Hảo</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
-<style>
-*{font-family:'Inter',system-ui,sans-serif;-webkit-tap-highlight-color:transparent;box-sizing:border-box}
-body{background:#EDEEF2;padding-bottom:118px;color:#0F1115}
-.app{max-width:520px;margin:0 auto;background:#F6F7F9;min-height:100vh;box-shadow:0 0 0 1px #e5e7eb,0 24px 60px rgba(0,0,0,.12)}
-.display{font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:-.04em}
-.num{font-family:'Plus Jakarta Sans',sans-serif;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
-@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-@keyframes slide{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
-@keyframes grow{from{width:0}to{width:var(--w)}}
-@keyframes pop{0%{transform:scale(.96)}100%{transform:scale(1)}}
-.tab-page{animation:slide .28s ease both}
-.card{animation:rise .35s ease both;background:#fff;border:1px solid #EDEEF2;border-radius:22px;padding:16px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
-.label{font-size:11px;letter-spacing:.07em;font-weight:700;color:#6B7280;text-transform:uppercase}
-input,select{border:1px solid #E5E7EB;border-radius:14px;padding:12px;width:100%;outline:none;background:#fff;font-size:15px;font-weight:500}
-input:focus,select:focus{border-color:#111;box-shadow:0 0 0 3px rgba(0,0,0,.08)}
-.btn{background:#111;color:#fff;padding:13px;border-radius:14px;font-weight:700;width:100%}
-.btn:active{transform:scale(.98)}
-.btn2{background:#F2F3F5;padding:10px 12px;border-radius:12px;font-weight:600;font-size:13px}
-.pill{font-size:11px;font-weight:700;padding:5px 9px;border-radius:999px}
-.hero{background:#111;color:#fff;border-radius:0 0 28px 28px;padding:20px 18px 18px;position:relative;overflow:hidden}
-.hero::after{content:'';position:absolute;right:-30px;top:-40px;width:190px;height:190px;background:radial-gradient(circle,rgba(0,166,124,.5),transparent 70%);border-radius:50%}
-.balance{background:#1D1F24;border:1px solid #2A2D34;border-radius:20px;padding:16px;position:relative;z-index:1}
-.progress{height:8px;background:#F2F3F5;border-radius:999px;overflow:hidden}
-.progress>div{height:100%;border-radius:999px;background:#111;animation:grow .9s ease both}
-.progress-light{height:6px;background:rgba(255,255,255,.18);border-radius:999px;overflow:hidden}
-.progress-light>div{height:100%;background:#fff;border-radius:999px;animation:grow .9s ease both}
-table{border-collapse:separate;border-spacing:0;width:100%}
-th{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#6B7280;font-weight:700;padding:10px 8px;text-align:left;border-bottom:1px solid #EDEEF2;white-space:nowrap}
-td{padding:12px 8px;border-bottom:1px solid #F3F4F6;font-size:13.5px;vertical-align:middle}
-tbody tr:last-child td{border-bottom:none}
-.bottom{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);width:calc(100% - 28px);max-width:492px;background:rgba(255,255,255,.97);backdrop-filter:blur(16px);border:1px solid #E5E7EB;border-radius:22px;display:flex;padding:6px;z-index:50;box-shadow:0 12px 32px rgba(0,0,0,.14)}
-.bnav{flex:1;text-align:center;font-size:10.5px;font-weight:700;color:#9CA3AF;padding:7px 2px;border-radius:16px}
-.bnav.active{color:#fff;background:#111}
-.bnav span{font-size:19px;display:block}
-.fab{position:fixed;right:22px;bottom:98px;width:56px;height:56px;border-radius:50%;background:#111;color:#fff;font-size:26px;z-index:60;box-shadow:0 10px 24px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center}
-.seg{display:flex;background:#F2F3F5;padding:4px;border-radius:14px}
-.seg button{flex:1;padding:10px;border-radius:10px;font-weight:700;font-size:13px}
-.seg button.active{background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.12)}
-.icon{width:40px;height:40px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.toast{position:fixed;top:14px;left:50%;transform:translateX(-50%) translateY(-70px);background:#111;color:#fff;padding:11px 16px;border-radius:999px;font-weight:600;font-size:13px;z-index:100;transition:.35s}
-.toast.show{transform:translateX(-50%) translateY(0)}
-.chip-btn{padding:8px 10px;border-radius:999px;background:#F2F3F5;font-size:12px;font-weight:700;border:1px solid transparent}
-.chip-btn.active{background:#111;color:#fff}
-.range{width:100%;accent-color:#111}
-.legend-dot{width:10px;height:10px;border-radius:50%;display:inline-block}
-.sheet{animation:pop .22s ease both}
-</style></head><body>
-<div class="app">
-<div class="hero">
-<div class="flex justify-between items-center relative z-10"><div class="flex gap-3 items-center"><div class="w-10 h-10 bg-white rounded-2xl flex items-center justify-center text-xl">🏠</div><div><p class="display font-extrabold text-[17px] leading-none">FinHome</p><p class="text-white/60 text-[12px] mt-1">Quản lý chi tiêu gia đình</p></div></div><div class="flex gap-2"><span class="px-3 py-2 bg-white/10 rounded-full text-[12px] font-semibold" id="monthLabelTop">11/2026</span><span class="w-9 h-9 bg-white text-black rounded-full flex items-center justify-center font-bold text-sm">S</span></div></div>
-<div class="balance mt-5 relative z-10">
-<div class="flex justify-between items-start"><div><p class="text-white/50 text-[12px]">Tổng số dư • <span id="monthName">Tháng 11</span></p><p id="balance" class="num text-[34px] leading-none font-extrabold mt-2">0 ₫</p></div><span class="pill bg-emerald-400/20 text-emerald-300" id="healthBadge">● Ổn định</span></div>
-<div class="grid grid-cols-2 gap-3 mt-4"><div><p class="text-white/50 text-[12px]">↗ Tổng thu</p><p id="totalIn" class="num font-bold text-[16px]">0 ₫</p></div><div><p class="text-white/50 text-[12px]">↘ Tổng chi</p><p id="totalOut" class="num font-bold text-[16px]">0 ₫</p></div></div>
-<div class="mt-4"><div class="flex justify-between text-[12px] text-white/60 mb-1.5"><span>Đã chi <b class="text-white" id="expenseRatio">0%</b> thu nhập</span><span id="saveRate">Tiết kiệm 0%</span></div><div class="progress-light"><div id="expenseBar" style="--w:0%"></div></div></div>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="max-w-7xl mx-auto p-3 md:p-6">
+<!-- HEADER -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
+<div>
+<h1 class="text-2xl md:text-3xl font-black text-slate-900">💰 Quản Lý Chi Tiêu Gia Đình</h1>
+<p class="text-slate-500 text-sm">Thu nhập vợ chồng • Hũ tiền • Thống kê theo tháng • Sửa không sợ hỏng</p>
 </div>
-<div class="flex gap-2 mt-4 relative z-10"><input type="month" id="monthPicker" value="2026-11" class="!bg-white/10 !border-white/15 !text-white [color-scheme:dark]"><button onclick="openModal()" class="bg-white text-black font-bold px-4 rounded-2xl text-sm whitespace-nowrap">＋ Thêm</button></div>
-</div>
-
-<div class="p-3.5 space-y-4">
-<!-- DASHBOARD -->
-<div id="tab-overview" class="tab-page space-y-4">
-<div class="grid grid-cols-2 gap-3">
-<div class="card"><div class="flex justify-between"><div class="icon bg-blue-50">👨🏻</div><span class="pill bg-blue-50 text-blue-700">CHỒNG</span></div><p class="label mt-3">Thu nhập chồng</p><p id="incHusband" class="num text-[20px] font-extrabold mt-1">0 ₫</p><p class="text-[12px] text-slate-500 mt-1" id="incHusbandNote"></p><button class="btn2 w-full mt-3" onclick="showTab('income')">Sửa thu nhập</button></div>
-<div class="card"><div class="flex justify-between"><div class="icon bg-pink-50">👩🏻</div><span class="pill bg-pink-50 text-pink-700">VỢ</span></div><p class="label mt-3">Thu nhập vợ</p><p id="incWife" class="num text-[20px] font-extrabold mt-1">0 ₫</p><p class="text-[12px] text-slate-500 mt-1" id="incWifeNote"></p><button class="btn2 w-full mt-3" onclick="showTab('income')">Sửa thu nhập</button></div>
-</div>
-
-<!-- 1. BIỂU ĐỒ CỘT SO SÁNH CÁC THÁNG -->
-<div class="card">
-<div class="flex justify-between items-start"><div><h3 class="display font-bold text-[16px]">So sánh Thu — Chi từng tháng</h3><p class="text-[12px] text-slate-500 mt-1" id="compareText">Cột xanh = Thu, cột đỏ = Chi</p></div><span class="pill bg-slate-100">Dạng cột</span></div>
-<div class="flex gap-2 mt-3"><button class="chip-btn active" id="btn6" onclick="setChartRange(6,this)">6 tháng</button><button class="chip-btn" id="btn12" onclick="setChartRange(12,this)">12 tháng</button><button class="chip-btn" onclick="setChartRange(3,this)">3 tháng</button></div>
-<div class="relative mt-2"><canvas id="chartMonth" height="220"></canvas></div>
-<div class="grid grid-cols-3 gap-2 mt-3">
-<div class="bg-slate-50 rounded-2xl p-3 text-center"><p class="label !text-[10px]">Thu cao nhất</p><p id="bestIn" class="font-bold text-[12px] mt-1">-</p></div>
-<div class="bg-rose-50 rounded-2xl p-3 text-center"><p class="label !text-[10px]">Chi cao nhất</p><p id="bestOut" class="font-bold text-[12px] mt-1 text-rose-600">-</p></div>
-<div class="bg-emerald-50 rounded-2xl p-3 text-center"><p class="label !text-[10px]">Dư nhiều nhất</p><p id="bestSave" class="font-bold text-[12px] mt-1 text-emerald-600">-</p></div>
-</div>
-<div class="overflow-x-auto mt-3"><table><thead><tr><th>Tháng</th><th class="!text-right">Thu</th><th class="!text-right">Chi</th><th class="!text-right">Còn lại</th><th class="!text-right">Tiết kiệm</th></tr></thead><tbody id="monthMiniTable"></tbody></table></div>
-</div>
-
-<!-- 2. BIỂU ĐỒ TRÒN TRỰC QUAN -->
-<div class="card">
-<div class="flex justify-between items-start"><div><h3 class="display font-bold text-[16px]">Tháng này chi vào đâu nhiều nhất?</h3><p class="text-[12px] text-slate-500 mt-1">Nhìn hình tròn là biết ngay phần nào đang ngốn tiền.</p></div><span class="pill bg-violet-50 text-violet-700">Hình tròn</span></div>
-<div class="relative mt-2"><canvas id="chartCat" height="210"></canvas><div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"><p class="text-[11px] text-slate-500 font-semibold">TỔNG CHI</p><p id="pieCenter" class="num font-extrabold text-[18px]">0 ₫</p><p class="text-[11px] text-slate-400" id="pieCenterSub"></p></div></div>
-<div id="catLegend" class="space-y-2.5 mt-3"></div>
-<div class="bg-amber-50 border border-amber-100 rounded-2xl p-3 mt-3"><p class="text-[13px] font-semibold">💡 <span id="insightCat">Chưa có dữ liệu chi</span></p></div>
-</div>
-
-<!-- 3. HŨ TIỀN CÂN ĐỐI CHO THÁNG SAU -->
-<div class="card">
-<div class="flex justify-between items-start"><div><h3 class="display font-bold text-[16px]">Hũ tiền — Cân đối cho tháng sau</h3><p class="text-[12px] text-slate-500 mt-1">Gợi ý dựa trên trung bình 3 tháng gần nhất. Kéo thanh trượt để cân đối.</p></div><button class="btn2" onclick="showTab('envelopes')">Chỉnh hũ →</button></div>
-<div id="envelopePlan" class="space-y-4 mt-4"></div>
-<div class="bg-slate-900 text-white rounded-2xl p-4 mt-4"><div class="flex justify-between"><span class="text-[12px] text-white/60">Tổng ngân sách hũ tháng sau</span><span class="font-bold num" id="nextTotal">0 ₫</span></div><div class="flex justify-between mt-2"><span class="text-[12px] text-white/60">Thu nhập dự kiến tháng sau</span><span class="font-bold num" id="nextIncome">0 ₫</span></div><div class="flex justify-between mt-2 pt-2 border-t border-white/10"><span class="font-semibold">Còn lại chưa chia hũ</span><span class="font-extrabold num" id="nextLeft">0 ₫</span></div><p class="text-[12px] text-white/60 mt-2" id="nextHint"></p></div>
+<div class="flex gap-2 items-center">
+<input type="month" id="monthPicker" class="w-auto !w-[180px]">
+<button class="btn" onclick="openModal()">+ Thêm giao dịch</button>
 </div>
 </div>
 
-<!-- THU NHẬP -->
-<div id="tab-income" class="tab-page hidden space-y-4">
-<div class="card !bg-[#111] !text-white"><h3 class="display font-bold text-[17px]">Thu nhập tháng này</h3><p class="text-white/60 text-[13px] mt-1">Nhập số mới và lưu. Ví dụ 18 triệu → nhập <b class="text-white">18000000</b></p>
-<div class="space-y-3 mt-4"><div><label class="text-[12px] font-semibold text-white/70">Thu nhập của Chồng (VND)</label><input id="editIncHusband" type="number" inputmode="numeric" placeholder="16000000" class="!bg-[#1D1F24] !border-white/10 !text-white"></div><div><label class="text-[12px] font-semibold text-white/70">Thu nhập của Vợ (VND)</label><input id="editIncWife" type="number" inputmode="numeric" placeholder="13000000" class="!bg-[#1D1F24] !border-white/10 !text-white"></div></div>
-<button class="btn !bg-white !text-black mt-4" onclick="saveIncome()">Lưu thu nhập</button></div>
-<div class="card"><h3 class="font-bold">Tên hiển thị</h3><div class="grid grid-cols-2 gap-2 mt-3"><input id="nameHusband"><input id="nameWife"></div><button class="btn2 w-full mt-2" onclick="saveNames()">Lưu tên</button></div>
-<div class="card"><h3 class="font-bold mb-2">Bảng thu nhập từng tháng</h3><div class="overflow-x-auto"><table><thead><tr><th>Tháng</th><th class="!text-right">Thu chồng</th><th class="!text-right">Thu vợ</th><th class="!text-right">Tổng thu</th></tr></thead><tbody id="incomeTableBody"></tbody></table></div></div>
+<!-- TABS -->
+<div class="flex gap-2 overflow-x-auto pb-2 mb-3" id="tabs">
+<button class="tab-btn active" onclick="showTab('overview',this)">📊 Tổng quan</button>
+<button class="tab-btn" onclick="showTab('trans',this)">🧾 Giao dịch</button>
+<button class="tab-btn" onclick="showTab('envelopes',this)">🏦 Hũ tiền</button>
+<button class="tab-btn" onclick="showTab('cats',this)">🏷️ Danh mục</button>
+<button class="tab-btn" onclick="showTab('stats',this)">📈 Thống kê tháng</button>
+<button class="tab-btn" onclick="showTab('settings',this)">⚙️ Cài đặt</button>
 </div>
 
-<!-- GIAO DỊCH -->
-<div id="tab-trans" class="tab-page hidden space-y-4">
-<div class="card"><div class="flex gap-2"><input id="searchTx" placeholder="Tìm: lương, xăng, học..." oninput="render()"><select id="filterType" onchange="render()" class="!w-[118px]"><option value="">Tất cả</option><option value="Thu">Thu</option><option value="Chi">Chi</option></select></div>
-<div class="mt-2 overflow-x-auto"><table><thead><tr><th>Ngày</th><th>Nội dung</th><th>Người</th><th class="!text-right">Số tiền</th><th></th></tr></thead><tbody id="txTableBody"></tbody></table></div></div>
+<!-- OVERVIEW -->
+<div id="tab-overview">
+<div class="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-4">
+<div class="card !bg-blue-50"><p class="text-xs font-bold text-blue-600">THU NHẬP CỦA CHỒNG</p><p id="incHusband" class="text-xl font-black mt-1">0 ₫</p><p id="incHusbandCount" class="text-xs text-slate-500"></p></div>
+<div class="card !bg-pink-50"><p class="text-xs font-bold text-pink-600">THU NHẬP CỦA VỢ</p><p id="incWife" class="text-xl font-black mt-1">0 ₫</p><p id="incWifeCount" class="text-xs text-slate-500"></p></div>
+<div class="card !bg-emerald-50"><p class="text-xs font-bold text-emerald-600">TỔNG THU</p><p id="totalIn" class="text-xl font-black mt-1">0 ₫</p><p class="text-xs text-slate-500" id="monthLabel1"></p></div>
+<div class="card !bg-red-50"><p class="text-xs font-bold text-red-600">TỔNG CHI</p><p id="totalOut" class="text-xl font-black mt-1">0 ₫</p><p class="text-xs text-slate-500" id="expenseRatio"></p></div>
+<div class="card !bg-amber-50 col-span-2 lg:col-span-1"><p class="text-xs font-bold text-amber-700">SỐ DƯ CÒN LẠI</p><p id="balance" class="text-xl font-black mt-1">0 ₫</p><div class="progress mt-2"><div id="balanceBar" style="background:#0f766e;width:50%"></div></div><p id="balanceNote" class="text-xs mt-1"></p></div>
+</div>
+<div class="grid md:grid-cols-2 gap-4">
+<div class="card"><h3 class="font-bold mb-2">Thu vs Chi - 12 tháng gần nhất</h3><canvas id="chartMonth" height="200"></canvas></div>
+<div class="card"><h3 class="font-bold mb-2">Chi theo danh mục - tháng này</h3><canvas id="chartCat" height="200"></canvas></div>
+</div>
+<div class="card mt-4"><h3 class="font-bold mb-2">🔥 Top 3 khoản chi lớn nhất tháng này</h3><div id="top3"></div></div>
+<div class="card mt-4"><h3 class="font-bold mb-2">🏦 Hũ tiền tháng này</h3><div id="envelopeOverview" class="grid md:grid-cols-3 gap-3"></div></div>
 </div>
 
-<!-- HŨ TIỀN -->
-<div id="tab-envelopes" class="tab-page hidden space-y-4">
-<div class="card !bg-amber-50 !border-amber-100"><h3 class="font-bold">🎯 Cách cân đối hũ cho tháng sau</h3><p class="text-[13px] text-slate-600 mt-1">Kéo thanh trượt để tăng / giảm ngân sách từng hũ. Tổng ngân sách không nên vượt thu nhập dự kiến. Nếu hũ nào tháng này chi vượt quá nhiều, tháng sau nên tăng lên một chút, hũ nào thừa nhiều thì giảm xuống để dồn vào Tiết kiệm.</p></div>
-<button class="btn" onclick="addEnvelope()">＋ Thêm hũ tiền mới</button>
-<div id="envelopeList" class="space-y-3"></div>
-<div class="card"><h3 class="font-bold mb-2">Bảng hũ tiền • Ngân sách tháng này</h3><div class="overflow-x-auto"><table><thead><tr><th>Hũ tiền</th><th class="!text-right">Ngân sách</th><th class="!text-right">Đã chi</th><th class="!text-right">Còn lại</th><th></th></tr></thead><tbody id="envelopeTableBody"></tbody></table></div></div>
+<!-- TRANSACTIONS -->
+<div id="tab-trans" class="hidden">
+<div class="card mb-3 flex flex-col md:flex-row gap-2">
+<input id="searchTx" placeholder="🔍 Tìm ghi chú, danh mục..." oninput="render()">
+<select id="filterCat" onchange="render()"><option value="">Tất cả danh mục</option></select>
+<select id="filterPerson" onchange="render()"><option value="">Tất cả người</option><option value="Chồng">Chồng</option><option value="Vợ">Vợ</option><option value="Chung">Chung</option></select>
+<select id="filterType" onchange="render()"><option value="">Thu + Chi</option><option value="Thu">Chỉ Thu</option><option value="Chi">Chỉ Chi</option></select>
+</div>
+<div class="card"><div id="txList"></div></div>
 </div>
 
-<!-- DANH MỤC -->
-<div id="tab-cats" class="tab-page hidden space-y-4">
-<div class="card"><div class="flex justify-between"><h3 class="font-bold">Danh mục Thu</h3><button class="btn2" onclick="addCategory('Thu')">＋ Thêm</button></div><div id="catIn" class="mt-3 space-y-2"></div></div>
-<div class="card"><div class="flex justify-between"><h3 class="font-bold">Danh mục Chi</h3><button class="btn2" onclick="addCategory('Chi')">＋ Thêm</button></div><div id="catOut" class="mt-3 space-y-2"></div></div>
+<!-- ENVELOPES -->
+<div id="tab-envelopes" class="hidden">
+<div class="flex justify-between items-center mb-3"><h3 class="font-bold text-lg">Các hũ tiền / Thư mục tiền</h3><button class="btn" onclick="addEnvelope()">+ Thêm hũ mới</button></div>
+<div id="envelopeList" class="grid md:grid-cols-3 gap-3"></div>
+<p class="text-xs text-slate-500 mt-2">* Sửa / Xóa hũ không làm mất giao dịch cũ. Giao dịch cũ vẫn giữ nguyên lịch sử.</p>
 </div>
 
-<!-- THỐNG KÊ -->
-<div id="tab-stats" class="tab-page hidden space-y-4">
-<div class="card"><h3 class="font-bold">Tổng kết từng tháng</h3><div class="overflow-x-auto mt-2"><table><thead><tr><th>Tháng</th><th class="!text-right">Thu chồng</th><th class="!text-right">Thu vợ</th><th class="!text-right">Tổng thu</th><th class="!text-right">Tổng chi</th><th class="!text-right">Còn lại</th></tr></thead><tbody id="monthTableBody"></tbody></table></div></div>
-<div class="card"><h3 class="font-bold mb-2">Chi theo danh mục • Tháng này</h3><div class="overflow-x-auto"><table><thead><tr><th>Danh mục</th><th class="!text-right">Số tiền</th><th class="!text-right">Tỷ lệ</th></tr></thead><tbody id="catTableBody"></tbody></table></div></div>
-</div>
+<!-- CATEGORIES -->
+<div id="tab-cats" class="hidden">
+<div class="grid md:grid-cols-2 gap-4">
+<div class="card"><div class="flex justify-between"><h3 class="font-bold">Danh mục THU</h3><button class="btn !py-2" onclick="addCategory('Thu')">+ Thêm</button></div><div id="catIn" class="mt-3 space-y-2"></div></div>
+<div class="card"><div class="flex justify-between"><h3 class="font-bold">Danh mục CHI</h3><button class="btn !py-2" onclick="addCategory('Chi')">+ Thêm</button></div><div id="catOut" class="mt-3 space-y-2"></div></div>
 </div>
 </div>
 
-<button class="fab" onclick="openModal()">＋</button>
-<div class="bottom">
-<button class="bnav active" onclick="showTab('overview',this)"><span>⌂</span>Tổng quan</button>
-<button class="bnav" onclick="showTab('income',this)"><span>◈</span>Thu nhập</button>
-<button class="bnav" onclick="showTab('trans',this)"><span>▤</span>Giao dịch</button>
-<button class="bnav" onclick="showTab('envelopes',this)"><span>◉</span>Hũ tiền</button>
-<button class="bnav" onclick="showTab('cats',this)"><span>◎</span>Danh mục</button>
-<button class="bnav" onclick="showTab('stats',this)"><span>↗</span>Thống kê</button>
+<!-- STATS -->
+<div id="tab-stats" class="hidden">
+<div class="grid md:grid-cols-3 gap-3 mb-4">
+<div class="card text-center"><p class="text-xs font-bold">THÁNG THU NHIỀU NHẤT</p><p id="bestIn" class="font-black text-lg mt-1"></p></div>
+<div class="card text-center"><p class="text-xs font-bold">THÁNG CHI NHIỀU NHẤT</p><p id="bestOut" class="font-black text-lg mt-1 text-red-600"></p></div>
+<div class="card text-center"><p class="text-xs font-bold">THÁNG TIẾT KIỆM NHẤT</p><p id="bestSave" class="font-black text-lg mt-1 text-emerald-600"></p></div>
 </div>
-<div id="toast" class="toast">Đã lưu!</div>
-
-<!-- MODAL CHỈNH SỬA ĐẸP HƠN -->
-<div id="modal" class="fixed inset-0 bg-black/60 hidden items-end sm:items-center justify-center p-0 sm:p-3 z-[60] backdrop-blur-sm">
-<div class="sheet bg-white rounded-t-[28px] sm:rounded-[28px] w-full max-w-[520px] p-5 max-h-[92vh] overflow-y-auto">
-<div class="w-9 h-1 bg-slate-200 rounded-full mx-auto mb-4 sm:hidden"></div>
-<div class="flex justify-between items-start"><div><h3 class="display font-bold text-[20px]" id="modalTitle">Thêm giao dịch</h3><p class="text-[13px] text-slate-500 mt-1" id="modalSub">Chọn loại, nhập số tiền, lưu là xong.</p></div><button onclick="closeModal()" class="w-9 h-9 bg-slate-100 rounded-full font-bold">×</button></div>
-<div class="space-y-4 mt-5">
-<div><p class="label mb-2">1 • Loại giao dịch</p><div class="seg"><button id="btnThu" class="active" onclick="setType('Thu')">↗ Thu nhập</button><button id="btnChi" onclick="setType('Chi')">↘ Chi tiêu</button></div></div>
-<div><p class="label mb-2">2 • Số tiền</p><div class="relative"><input id="fAmount" type="number" inputmode="numeric" placeholder="0" class="!text-[26px] !font-extrabold !py-4 !pr-14 text-center"><span class="absolute right-4 top-1/2 -translate-y-1/2 font-bold text-slate-400">VND</span></div>
-<div class="flex gap-2 mt-2"><button class="btn2 flex-1" onclick="quickAmt(100000)">100k</button><button class="btn2 flex-1" onclick="quickAmt(500000)">500k</button><button class="btn2 flex-1" onclick="quickAmt(1000000)">1tr</button><button class="btn2 flex-1" onclick="quickAmt(5000000)">5tr</button></div></div>
-<div class="grid grid-cols-2 gap-3"><div><p class="label mb-2">Người</p><select id="fPerson"><option>Chồng</option><option>Vợ</option><option>Chung</option></select></div><div><p class="label mb-2">Ngày</p><input id="fDate" type="date" value="2026-11-16"></div></div>
-<div><p class="label mb-2">3 • Danh mục</p><select id="fCat"></select></div>
-<div><p class="label mb-2">4 • Hũ tiền</p><select id="fEnvelope"></select></div>
-<div><p class="label mb-2">5 • Ghi chú</p><input id="fNote" placeholder="VD: Lương tháng 11, Đổ xăng..."></div>
+<div class="card"><h3 class="font-bold mb-3">Bảng tổng kết từng tháng</h3><div id="monthTable" class="overflow-x-auto"></div></div>
 </div>
-<div class="flex gap-2 mt-6"><button class="btn" onclick="saveTx()">✓ Lưu giao dịch</button><button class="btn2 flex-1" onclick="closeModal()">Đóng</button></div>
-</div></div>
 
-<script>
-let state = JSON.parse(localStorage.getItem('gd_final_v1')||'null');
-if(!state){
- state={names:{husband:'Chồng',wife:'Vợ'},categories:{Thu:['Lương','Thưởng','Kinh doanh','Khác'],Chi:['Xăng xe','Tiền học cho con','Tiền mua sắm','Ăn uống','Điện nước','Nhà cửa','Khác']},envelopes:[{id:'xang',name:'Xăng xe',budget:1500000,nextBudget:1500000,color:'#F59E0B',icon:'⛽',bg:'#FEF3C7'},{id:'hoc',name:'Tiền học cho con',budget:3000000,nextBudget:3000000,color:'#8B5CF6',icon:'🎓',bg:'#EDE9FE'},{id:'mua',name:'Tiền mua sắm',budget:2000000,nextBudget:1800000,color:'#EC4899',icon:'🛍️',bg:'#FCE7F3'},{id:'an',name:'Ăn uống',budget:4000000,nextBudget:3800000,color:'#10B981',icon:'🍽️',bg:'#D1FAE5'},{id:'dien',name:'Điện nước',budget:1200000,nextBudget:1200000,color:'#3B82F6',icon:'💡',bg:'#DBEAFE'},{id:'tk',name:'Tiết kiệm',budget:3000000,nextBudget:3500000,color:'#111111',icon:'🏦',bg:'#E0E7FF'}],tx:[
-  {id:1,type:'Thu',person:'Chồng',cat:'Lương',amount:16000000,date:'2026-09-05',note:'Lương tháng 9',env:''},
-  {id:2,type:'Thu',person:'Vợ',cat:'Lương',amount:12000000,date:'2026-09-05',note:'Lương tháng 9',env:''},
-  {id:3,type:'Chi',person:'Chung',cat:'Xăng xe',amount:1200000,date:'2026-09-10',note:'Đổ xăng',env:'xang'},
-  {id:4,type:'Chi',person:'Chung',cat:'Tiền học cho con',amount:2800000,date:'2026-09-12',note:'Học phí',env:'hoc'},
-  {id:5,type:'Thu',person:'Chồng',cat:'Lương',amount:15500000,date:'2026-10-05',note:'Lương tháng 10',env:''},
-  {id:6,type:'Thu',person:'Vợ',cat:'Lương',amount:12500000,date:'2026-10-05',note:'Lương tháng 10',env:''},
-  {id:7,type:'Chi',person:'Chung',cat:'Tiền mua sắm',amount:1800000,date:'2026-10-15',note:'Mua sắm',env:'mua'},
-  {id:8,type:'Thu',person:'Chồng',cat:'Lương',amount:16000000,date:'2026-11-05',note:'Lương tháng 11',env:''},
-  {id:9,type:'Thu',person:'Vợ',cat:'Lương',amount:13000000,date:'2026-11-05',note:'Lương tháng 11',env:''},
-  {id:10,type:'Chi',person:'Chung',cat:'Xăng xe',amount:900000,date:'2026-11-08',note:'Đổ xăng',env:'xang'},
-  {id:11,type:'Chi',person:'Chung',cat:'Tiền học cho con',amount:2500000,date:'2026-11-10',note:'Học thêm',env:'hoc'}
- ]};
- try{let old=JSON.parse(localStorage.getItem('gd_pro_v2')||localStorage.getItem('gd_premium_v1')||localStorage.getItem('gd_mobile_v1')||'null'); if(old&&old.tx&&old.tx.length>3) state.tx=old.tx; if(old&&old.envelopes) state.envelopes=old.envelopes.map(e=>({...e,nextBudget:e.nextBudget||e.budget})); if(old&&old.categories) state.categories=old.categories;}catch(e){}
-}
-function save(){localStorage.setItem('gd_final_v1',JSON.stringify(state));}
-function fmt(n){return new Intl.NumberFormat('vi-VN').format(n||0)+' ₫'}
-function fmtShort(n){if(n>=1000000) return (n/1000000).toFixed(1).replace('.0','')+'tr'; if(n>=1000) return Math.round(n/1000)+'k'; return String(n||0)}
-function toast(m){let t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200);}
-function animateNum(el,to){let from=0; let st=performance.now(); function step(now){let p=Math.min(1,(now-st)/700); let e=1-Math.pow(1-p,3); el.textContent=fmt(Math.round(from+(to-from)*e)); if(p<1) requestAnimationFrame(step);} requestAnimationFrame(step);}
-let curType='Thu', editingId=null, chart1, chart2, chartRange=6;
-function monthVal(){return document.getElementById('monthPicker').value||'2026-11'}
-function setChartRange(n,btn){chartRange=n; document.querySelectorAll('.chip-btn').forEach(b=>b.classList.remove('active')); if(btn) btn.classList.add('active'); render();}
-function showTab(id,btn){
- document.querySelectorAll('[id^="tab-"]').forEach(e=>e.classList.add('hidden'));
- let el=document.getElementById('tab-'+id); el.classList.remove('hidden'); el.classList.remove('tab-page'); void el.offsetWidth; el.classList.add('tab-page');
- document.querySelectorAll('.bnav').forEach(b=>b.classList.remove('active'));
- if(btn) btn.classList.add('active'); else {let m={overview:0,income:1,trans:2,envelopes:3,cats:4,stats:5}; if(m[id]!==undefined) document.querySelectorAll('.bnav')[m[id]].classList.add('active');}
- window.scrollTo({top:0,behavior:'smooth'}); render();
-}
-function saveIncome(){
- let h=parseInt(document.getElementById('editIncHusband').value||0), w=parseInt(document.getElementById('editIncWife').value||0), m=monthVal();
- state.tx=state.tx.filter(x=>!(x.date.slice(0,7)==m && x.type=='Thu' && x.cat=='Lương'));
- if(h>0) state.tx.push({id:Date.now(),type:'Thu',person:'Chồng',cat:'Lương',amount:h,date:m+'-05',note:'Lương '+state.names.husband,env:''});
- if(w>0) state.tx.push({id:Date.now()+1,type:'Thu',person:'Vợ',cat:'Lương',amount:w,date:m+'-05',note:'Lương '+state.names.wife,env:''});
- save(); render(); toast('✓ Đã lưu thu nhập tháng '+m);
-}
-function quickAmt(v){document.getElementById('fAmount').value=v;}
-function openModal(id=null){
- editingId=id; document.getElementById('modal').style.display='flex';
- if(id){let t=state.tx.find(x=>x.id==id); curType=t.type; document.getElementById('fPerson').value=t.person; document.getElementById('fAmount').value=t.amount; document.getElementById('fDate').value=t.date; document.getElementById('fNote').value=t.note; document.getElementById('modalTitle').textContent='Sửa giao dịch'; document.getElementById('modalSub').textContent='Sửa số tiền, danh mục hoặc hũ tiền rồi lưu lại.'; refreshCat(t.cat); document.getElementById('fEnvelope').value=t.env||'';}
- else{curType='Thu'; document.getElementById('fAmount').value=''; document.getElementById('fNote').value=''; document.getElementById('modalTitle').textContent='Thêm giao dịch'; document.getElementById('modalSub').textContent='Chọn loại, nhập số tiền, lưu là xong.'; refreshCat();}
- setType(curType);
-}
-function closeModal(){document.getElementById('modal').style.display='none'}
-function setType(t){curType=t; document.getElementById('btnThu').className=t=='Thu'?'active':''; document.getElementById('btnChi').className=t=='Chi'?'active':''; refreshCat();}
-function refreshCat(sel){let c=document.getElementById('fCat'); c.innerHTML=state.categories[curType].map(x=>`<option ${x==sel?'selected':''}>${x}</option>`).join(''); let e=document.getElementById('fEnvelope'); e.innerHTML='<option value="">Không chọn hũ</option>'+state.envelopes.map(x=>`<option value="${x.id}">${x.icon||'🏦'} ${x.name}</option>`).join('');}
-function saveTx(){
- let amt=parseInt(document.getElementById('fAmount').value||0); if(!amt) return alert('Nhập số tiền');
- let obj={type:curType,person:document.getElementById('fPerson').value,cat:document.getElementById('fCat').value,env:document.getElementById('fEnvelope').value,amount:amt,date:document.getElementById('fDate').value||'2026-11-16',note:document.getElementById('fNote').value||document.getElementById('fCat').value};
- if(editingId) Object.assign(state.tx.find(x=>x.id==editingId),obj); else {obj.id=Date.now(); state.tx.push(obj);}
- save(); closeModal(); render(); toast('✓ Đã lưu giao dịch');
-}
-function delTx(id){if(confirm('Xóa giao dịch này?')){state.tx=state.tx.filter(x=>x.id!=id); save(); render(); toast('Đã xóa');}}
-function addEnvelope(){let n=prompt('Tên hũ mới (VD: Tiền biếu):'); if(!n) return; let b=parseInt(prompt('Ngân sách tháng (VD: 1000000):')||'0'); state.envelopes.push({id:'e'+Date.now(),name:n,budget:b||0,nextBudget:b||0,color:'#111',icon:'🏦',bg:'#F2F3F5'}); save(); render(); toast('✓ Đã thêm hũ '+n);}
-function editEnvelope(id){let e=state.envelopes.find(x=>x.id==id); let n=prompt('Đổi tên hũ:',e.name); if(n) e.name=n; let b=prompt('Đổi ngân sách tháng này:',e.budget); if(b!==null) e.budget=parseInt(b)||0; save(); render();}
-function setNextBudget(id,v){let e=state.envelopes.find(x=>x.id==id); e.nextBudget=parseInt(v)||0; document.getElementById('nextVal-'+id).textContent=fmt(e.nextBudget); save(); renderNextSummary();}
-function applyNextMonth(){if(!confirm('Áp dụng ngân sách tháng sau này làm ngân sách tháng hiện tại?')) return; state.envelopes.forEach(e=>e.budget=e.nextBudget||e.budget); save(); render(); toast('✓ Đã áp dụng ngân sách mới');}
-function renderNextSummary(){
- let total=state.envelopes.reduce((s,e)=>s+(e.nextBudget||e.budget),0);
- let last3=[...new Set(state.tx.map(x=>x.date.slice(0,7)))].sort().slice(-3);
- let avgIn=last3.length?Math.round(last3.reduce((s,mm)=>s+monthStats(mm).totalIn,0)/last3.length):0;
- document.getElementById('nextTotal').textContent=fmt(total);
- document.getElementById('nextIncome').textContent=fmt(avgIn);
- document.getElementById('nextLeft').textContent=fmt(avgIn-total);
- document.getElementById('nextHint').textContent=avgIn-total<0?'⚠️ Ngân sách hũ đang vượt thu nhập dự kiến ' + fmt(Math.abs(avgIn-total)) + '. Hãy giảm 1-2 hũ xuống.':avgIn-total>0?'✓ Còn dư '+fmt(avgIn-total)+' chưa chia hũ — có thể dồn vào Tiết kiệm.':'✓ Vừa khớp với thu nhập dự kiến.';
-}
-function addCategory(t){let n=prompt('Tên danh mục '+t+' mới:'); if(n && !state.categories[t].includes(n)) state.categories[t].push(n); save(); render();}
-function editCategory(t,o){let n=prompt('Đổi tên:',o); if(n) state.categories[t]=state.categories[t].map(x=>x==o?n:x); save(); render();}
-function delCategory(t,o){if(confirm('Xóa '+o+'?')){state.categories[t]=state.categories[t].filter(x=>x!=o); save(); render();}}
-function saveNames(){state.names.husband=document.getElementById('nameHusband').value||'Chồng'; state.names.wife=document.getElementById('nameWife').value||'Vợ'; save(); render(); toast('✓ Đã lưu tên');}
-function monthStats(m){let tx=state.tx.filter(x=>x.date.slice(0,7)==m); let inH=tx.filter(x=>x.type=='Thu'&&x.person=='Chồng').reduce((s,x)=>s+x.amount,0); let inW=tx.filter(x=>x.type=='Thu'&&x.person=='Vợ').reduce((s,x)=>s+x.amount,0); let inC=tx.filter(x=>x.type=='Thu'&&x.person=='Chung').reduce((s,x)=>s+x.amount,0); let totalIn=inH+inW+inC; let totalOut=tx.filter(x=>x.type=='Chi').reduce((s,x)=>s+x.amount,0); return {tx,inH,inW,totalIn,totalOut,bal:totalIn-totalOut};}
-function avgLast3(catOrEnv, isEnv){
- let months=[...new Set(state.tx.map(x=>x.date.slice(0,7)))].sort().slice(-3);
- if(!months.length) return 0;
- let total=months.reduce((s,mm)=>{let tx=state.tx.filter(x=>x.date.slice(0,7)==mm && x.type=='Chi'); if(isEnv) return s+tx.filter(x=>x.env==catOrEnv).reduce((a,x)=>a+x.amount,0); else return s+tx.filter(x=>x.cat==catOrEnv).reduce((a,x)=>a+x.amount,0);},0);
- return Math.round(total/months.length);
-}
-function render(){
- let m=monthVal(), s=monthStats(m);
- document.getElementById('monthLabelTop').textContent=m.split('-')[1]+'/'+m.split('-')[0];
- document.getElementById('monthName').textContent='Tháng '+parseInt(m.split('-')[1]);
- animateNum(document.getElementById('balance'),s.bal);
- document.getElementById('totalIn').textContent=fmt(s.totalIn);
- document.getElementById('totalOut').textContent=fmt(s.totalOut);
- document.getElementById('incHusband').textContent=fmt(s.inH);
- document.getElementById('incWife').textContent=fmt(s.inW);
- document.getElementById('incHusbandNote').textContent=state.names.husband+' • '+s.tx.filter(x=>x.type=='Thu'&&x.person=='Chồng').length+' khoản thu';
- document.getElementById('incWifeNote').textContent=state.names.wife+' • '+s.tx.filter(x=>x.type=='Thu'&&x.person=='Vợ').length+' khoản thu';
- document.getElementById('editIncHusband').value=s.inH||''; document.getElementById('editIncWife').value=s.inW||'';
- document.getElementById('nameHusband').value=state.names.husband; document.getElementById('nameWife').value=state.names.wife;
- let pct=s.totalIn?Math.round(s.totalOut/s.totalIn*100):0;
- document.getElementById('expenseRatio').textContent=pct+'%';
- document.getElementById('expenseBar').style.setProperty('--w',Math.min(100,pct)+'%'); document.getElementById('expenseBar').style.width=Math.min(100,pct)+'%';
- document.getElementById('saveRate').textContent='Tiết kiệm '+(Math.max(0,100-pct))+'%';
- document.getElementById('healthBadge').textContent=pct>90?'● Cần xem lại':pct>70?'● Cẩn thận':'● Ổn định';
- // --- BIỂU ĐỒ CỘT ---
- let monthsAll=[...new Set(state.tx.map(x=>x.date.slice(0,7)))].sort();
- let months=monthsAll.slice(-chartRange);
- let ins=months.map(mm=>monthStats(mm).totalIn), outs=months.map(mm=>monthStats(mm).totalOut), bals=months.map(mm=>monthStats(mm).bal);
- document.getElementById('monthMiniTable').innerHTML=months.slice().reverse().map(mm=>{let st=monthStats(mm); let rate=st.totalIn?Math.round((st.totalIn-st.totalOut)/st.totalIn*100):0; return `<tr><td><b>${mm}</b></td><td class="!text-right num text-emerald-600">${fmt(st.totalIn)}</td><td class="!text-right num text-rose-600">${fmt(st.totalOut)}</td><td class="!text-right num font-bold">${fmt(st.bal)}</td><td class="!text-right"><span class="pill ${rate>=30?'bg-emerald-50 text-emerald-700':rate>=10?'bg-amber-50 text-amber-700':'bg-rose-50 text-rose-600'}">${rate}%</span></td></tr>`}).join('');
- if(monthsAll.length){let rows=monthsAll.map(mm=>({m:mm,...monthStats(mm)})); let bi=[...rows].sort((a,b)=>b.totalIn-a.totalIn)[0]; let bo=[...rows].sort((a,b)=>b.totalOut-a.totalOut)[0]; let bs=[...rows].sort((a,b)=>b.bal-a.bal)[0]; document.getElementById('bestIn').textContent=bi.m+' • '+fmtShort(bi.totalIn); document.getElementById('bestOut').textContent=bo.m+' • '+fmtShort(bo.totalOut); document.getElementById('bestSave').textContent=bs.m+' • '+fmtShort(bs.bal); document.getElementById('compareText').textContent='Tháng thu cao nhất '+bi.m+' • Chi cao nhất '+bo.m;}
- if(chart1) chart1.destroy(); chart1=new Chart(document.getElementById('chartMonth'),{type:'bar',data:{labels:months.map(x=>'T'+parseInt(x.split('-')[1])+'/'+x.split('-')[0].slice(2)),[STRIPPED]
- // --- BIỂU ĐỒ TRÒN ---
- let catMap={}; s.tx.filter(x=>x.type=='Chi').forEach(x=>catMap[x.cat]=(catMap[x.cat]||0)+x.amount);
- let catEntries=Object.entries(catMap).sort((a,b)=>b[1]-a[1]);
- document.getElementById('pieCenter').textContent=fmt(s.totalOut);
- document.getElementById('pieCenterSub').textContent=catEntries.length?catEntries[0][0]+' nhiều nhất':'Chưa có chi';
- let palette=['#111111','#0EA5A0','#F59E0B','#8B5CF6','#EC4899','#3B82F6','#10B981','#F04438','#F97316','#84CC16'];
- document.getElementById('catLegend').innerHTML=catEntries.map(([k,v],i)=>{let p=s.totalOut?Math.round(v/s.totalOut*100):0; return `<div class="flex items-center gap-3"><span class="legend-dot" style="background:${palette[i%palette.length]}"></span><span class="flex-1 text-[14px] font-medium truncate">${k}</span><span class="text-[13px] text-slate-500 w-10 text-right">${p}%</span><b class="num text-[13px] w-[90px] text-right">${fmt(v)}</b></div><div class="progress !h-1.5 ml-[22px]"><div style="background:${palette[i%palette.length]};--w:${p}%;width:${p}%"></div></div>`}).join('')||'<p class="text-slate-400 text-sm">Chưa có khoản chi trong tháng này</p>';
- if(catEntries.length) document.getElementById('insightCat').textContent='Tháng này nhà mình chi nhiều nhất vào "'+catEntries[0][0]+'" — '+fmt(catEntries[0][1])+' ('+Math.round(catEntries[0][1]/s.totalOut*100)+'% tổng chi). '+(catEntries[1]?'Tiếp theo là "'+catEntries[1][0]+'" '+fmt(catEntries[1][1])+'.':'');
- else document.getElementById('insightCat').textContent='Chưa có dữ liệu chi trong tháng này.';
- if(chart2) chart2.destroy(); chart2=new Chart(document.getElementById('chartCat'),{type:'doughnut',data:{labels:catEntries.map(x=>x[0]),[STRIPPED]
- // --- HŨ TIỀN KẾ HOẠCH THÁNG SAU ---
- document.getElementById('envelopePlan').innerHTML=state.envelopes.map(e=>{
-  let spent=s.tx.filter(x=>x.type=='Chi'&&x.env==e.id).reduce((a,x)=>a+x.amount,0);
-  let avg=avgLast3(e.id,true);
-  let next=e.nextBudget??e.budget;
-  let suggest=Math.max(0,Math.round(avg/100000)*100000);
-  let diff=next-spent;
-  return `<div class="border border-slate-100 rounded-2xl p-3.5"><div class="flex justify-between items-center"><div class="flex gap-2.5 items-center"><span class="icon !w-10 !h-10" style="background:${e.bg}">${e.icon}</span><div><b class="text-[14px]">${e.name}</b><p class="text-[12px] text-slate-500">Tháng này đã chi ${fmt(spent)} • TB 3 tháng ${fmt(avg)}</p></div></div><b class="num text-[14px]" id="nextVal-${e.id}">${fmt(next)}</b></div>
-  <input type="range" class="range mt-3" min="0" max="${Math.max(5000000,Math.round((e.budget*2)/500000)*500000)}" step="100000" value="${next}" oninput="setNextBudget('${e.id}',this.value)">
-  <div class="flex justify-between text-[11px] text-slate-400 mt-1"><span>0</span><span>Gợi ý: ${fmt(suggest)}</span><span>${fmt(Math.max(5000000,Math.round((e.budget*2)/500000)*500000))}</span></div>
-  <div class="flex gap-2 mt-2"><button class="btn2 flex-1 !py-2" onclick="document.querySelector('input[oninput*=&quot;${e.id}&quot;]').value=${suggest};setNextBudget('${e.id}',${suggest})">Dùng gợi ý ${fmtShort(suggest)}</button><button class="btn2 flex-1 !py-2" onclick="document.querySelector('input[oninput*=&quot;${e.id}&quot;]').value=${e.budget};setNextBudget('${e.id}',${e.budget})">Giữ như tháng này</button></div></div>`;
- }).join('')+`<button class="btn mt-1" onclick="applyNextMonth()">✓ Áp dụng ngân sách tháng sau → làm ngân sách chính</button>`;
- renderNextSummary();
- // envelopes list + table
- document.getElementById('envelopeList').innerHTML=state.envelopes.map(e=>{let spent=s.tx.filter(x=>x.type=='Chi'&&x.env==e.id).reduce((a,x)=>a+x.amount,0); return `<div class="card"><div class="flex justify-between"><div class="flex gap-2.5 items-center"><span class="icon" style="background:${e.bg}">${e.icon}</span><b>${e.name}</b></div><div class="flex gap-1"><button class="btn2" onclick="editEnvelope('${e.id}')">Sửa</button><button class="btn2 !bg-red-50 !text-red-600" onclick="delEnvelope('${e.id}')">Xóa</button></div></div><p class="text-[13px] text-slate-600 mt-3">Ngân sách: ${fmt(e.budget)} • Đã chi: ${fmt(spent)} • Còn: <b>${fmt(e.budget-spent)}</b> • Tháng sau dự kiến: <b>${fmt(e.nextBudget||e.budget)}</b></p></div>`}).join('');
- document.getElementById('envelopeTableBody').innerHTML=state.envelopes.map(e=>{let spent=s.tx.filter(x=>x.type=='Chi'&&x.env==e.id).reduce((a,x)=>a+x.amount,0); return `<tr><td><b>${e.icon} ${e.name}</b></td><td class="!text-right num">${fmt(e.budget)}</td><td class="!text-right num text-rose-600">${fmt(spent)}</td><td class="!text-right num font-bold ${e.budget-spent<0?'text-rose-600':'text-emerald-600'}">${fmt(e.budget-spent)}</td><td><button class="btn2 !py-1.5" onclick="editEnvelope('${e.id}')">Sửa</button></td></tr>`}).join('');
- document.getElementById('catIn').innerHTML=state.categories.Thu.map(c=>`<div class="flex justify-between items-center bg-slate-50 px-3 py-3 rounded-2xl"><span class="font-medium">↗ ${c}</span><span class="flex gap-1"><button class="btn2" onclick="editCategory('Thu','${c}')">Sửa</button><button class="btn2 !bg-red-50 !text-red-600" onclick="delCategory('Thu','${c}')">Xóa</button></span></div>`).join('');
- document.getElementById('catOut').innerHTML=state.categories.Chi.map(c=>`<div class="flex justify-between items-center bg-slate-50 px-3 py-3 rounded-2xl"><span class="font-medium">↘ ${c}</span><span class="flex gap-1"><button class="btn2" onclick="editCategory('Chi','${c}')">Sửa</button><button class="btn2 !bg-red-50 !text-red-600" onclick="delCategory('Chi','${c}')">Xóa</button></span></div>`).join('');
- let q=(document.getElementById('searchTx').value||'').toLowerCase(); let ft=document.getElementById('filterType').value;
- let list=[...s.tx].filter(x=>(!q||(x.note+x.cat).toLowerCase().includes(q))&&(!ft||x.type==ft)).sort((a,b)=>b.date.localeCompare(a.date));
- document.getElementById('txTableBody').innerHTML=list.length?list.map(t=>`<tr><td class="whitespace-nowrap text-slate-500">${t.date.slice(5)}</td><td><b>${t.note}</b><br><span class="pill bg-slate-100">${t.cat}</span></td><td><span class="pill ${t.person=='Chồng'?'bg-blue-50 text-blue-700':t.person=='Vợ'?'bg-pink-50 text-pink-700':'bg-slate-100'}">${t.person}</span></td><td class="!text-right font-bold num whitespace-nowrap ${t.type=='Thu'?'text-emerald-600':'text-rose-600'}">${t.type=='Thu'?'+':'-'}${fmt(t.amount)}</td><td><div class="flex gap-1"><button class="btn2 !py-1.5" onclick="openModal(${t.id})">Sửa</button><button class="btn2 !py-1.5 !bg-red-50 !text-red-600" onclick="delTx(${t.id})">Xóa</button></div></td></tr>`).join(''):`<tr><td colspan="5" class="text-center text-slate-400">Chưa có giao dịch</td></tr>`;
- let monthsAll2=[...new Set(state.tx.map(x=>x.date.slice(0,7)))].sort().reverse();
- document.getElementById('incomeTableBody').innerHTML=monthsAll2.map(mm=>{let st=monthStats(mm); return `<tr><td><b>${mm}</b></td><td class="!text-right num">${fmt(st.inH)}</td><td class="!text-right num">${fmt(st.inW)}</td><td class="!text-right num font-bold text-emerald-600">${fmt(st.totalIn)}</td></tr>`}).join('');
- document.getElementById('monthTableBody').innerHTML=monthsAll2.map(mm=>{let st=monthStats(mm); return `<tr><td><b>${mm}</b></td><td class="!text-right num">${fmt(st.inH)}</td><td class="!text-right num">${fmt(st.inW)}</td><td class="!text-right num font-bold text-emerald-600">${fmt(st.totalIn)}</td><td class="!text-right num font-bold text-rose-600">${fmt(st.totalOut)}</td><td class="!text-right num font-extrabold ${st.bal>=0?'text-emerald-600':'text-rose-600'}">${fmt(st.bal)}</td></tr>`}).join('');
- document.getElementById('catTableBody').innerHTML=Object.entries(catMap).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<tr><td><b>${k}</b></td><td class="!text-right num font-bold">${fmt(v)}</td><td class="!text-right num">${s.totalOut?Math.round(v/s.totalOut*100):0}%</td></tr>`).join('')||'<tr><td colspan="3" class="text-center text-slate-400">Chưa có chi</td></tr>';
-}
-document.getElementById('monthPicker').addEventListener('change',render);
-render();
-</script></body></html>
+<!-- SETTINGS -->
+<div id="tab-settings" class="hidden">
+<div class="card max-w-2xl space-y-3">
+<h3 class="font-bold">Đổi tên vợ chồng</h3>
+<div class="grid grid-cols-2 gap-2"><div><label class="text-xs font-bold">Tên chồng</label><input id="nameHusband" value="Chồng"></div><div><label class="text-xs font-bold">Tên vợ</label><input id="nameWife" value="Vợ"></div></div>
+<button class="btn" onclick="saveNames()">Lưu tên</button>
+<hr>
+<h3 class="font-bold">Dữ liệu</h3>
+<div class="flex gap-2 flex-wrap">
+<button class="btn2" onclick="exportData()">⬇ Xuất dữ liệu JSON</button>
+<button class="btn2" onclick="document.getElementById('importFile').click()">⬆ Nhập dữ liệu</button>
+<input type="file" id="importFile" class="hidden" onchange="importData(event)">
+<button class="btn2 !bg-red-100 !text-red-700" onclick="resetData()">🗑 Xóa hết, về mặc định</button>
+</div>
+<p class="text-xs text-slate-500">Dữ liệu lưu trong trình duyệt của bạn (localStorage). Xuất JSON để sao lưu, mang qua máy khác.</p>
+</div>
+</div>
+
+<p class="text-center text-xs text-slate-400 mt-6">App Quản Lý Chi Tiêu Gia Đình • Làm bởi Meta AI cho gia đình bạn • Tách thư mục: Tổng quan / Giao dịch / Hũ tiền / Danh mục / Thống kê / Cài đặt</p>
+</div>
+
+<!-- MODAL -->
+<div id="modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-3 z-50">
+<div class="bg-white rounded-2xl w-full max-w-lg p-5 max-h-[90vh] overflow-y-auto">
+<h3 class="font-black text-lg mb-3" id="modalTitle">Thêm giao dịch</h3>
+<div class="space-y-2">
+<div class="grid grid-cols-2 gap-2"><button id="btnThu" class="btn" onclick="setType('Thu')">⬆ THU</button><button id="btnChi" class="btn2" onclick="setType('Chi')">⬇ CHI</button></div>
+<div><label class="text-xs font-bold">Người</label><select id="fPerson"><option>Chồng</option><option>Vợ</option><option>Chung</option></select></div>
+<div><label class="text-xs font-bold">Danh mục</label><select id="fCat"></select></div>
+<div><label class="text-xs font-bold">Hũ tiền (chỉ khi Chi)</label><select id="fEnvelope"></select></div>
+<div><label class="text-xs font-bold">Số tiền (VND)</label><input id="fAmount" type="number" placeholder="Ví dụ 500000"></div>
+<div><label class="text-xs font-bold">Ngày</label><input id="fDate" type="date"></div>
+<div><label class="text-xs font-bold">Ghi chú</label><input id="fNote" placeholder="Ví dụ: Lương tháng 11, Xăng xe..."></div>
+</div>
+<div class="flex gap-2 mt-4"><button class="btn flex-1" onclick="saveTx()">Lưu</button><button class="btn2 flex-1" onclick="closeModal()">Đóng</button></div>
+</div>
+</div>
+
+
+  <!-- JS: nạp dữ liệu TRƯỚC, rồi mới nạp chức năng -->
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
